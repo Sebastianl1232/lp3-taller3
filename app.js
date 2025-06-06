@@ -83,3 +83,37 @@ function mostrarCanciones(canciones) {
   contenedor.innerHTML = '';
   contenedor.appendChild(tabla);
 }
+
+function buscarCanciones() {
+  const query = document.getElementById('busqueda').value.trim();
+  if (!query) {
+    alert('Ingresa un término de búsqueda.');
+    return;
+  }
+  fetch(`${API_BASE}/canciones/buscar?q=${encodeURIComponent(query)}`)
+    .then(response => {
+      if (!response.ok) throw new Error('Error en la búsqueda');
+      return response.json();
+    })
+    .then(data => mostrarCanciones(data.items || data))
+    .catch(error => {
+      document.getElementById('contenido').innerText = 'Error al buscar canciones: ' + error.message;
+    });
+}
+
+function cargarFavoritos() {
+  const usuarioId = document.getElementById('usuarioId').value.trim();
+  if (!usuarioId) {
+    alert('Ingresa el ID de usuario.');
+    return;
+  }
+  fetch(`${API_BASE}/usuarios/${usuarioId}/favoritos`)
+    .then(response => {
+      if (!response.ok) throw new Error('Error al cargar favoritos');
+      return response.json();
+    })
+    .then(data => mostrarCanciones(data.items || data))
+    .catch(error => {
+      document.getElementById('contenido').innerText = 'Error al cargar favoritos: ' + error.message;
+    });
+}
