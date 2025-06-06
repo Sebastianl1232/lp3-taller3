@@ -291,3 +291,15 @@ function cargarFavoritos() {
       document.getElementById('contenido').innerText = 'Error al cargar favoritos: ' + error.message;
     });
 }
+
+window.onload = function() {
+  const btn = document.getElementById('btnComenzar');
+  if (btn) {
+    btn.onclick = function() {
+      document.getElementById('bienvenida').style.display = 'none';
+      const contenido = document.getElementById('contenido');
+      contenido.style.display = 'block';
+      cargarUsuariosLista();
+    };
+  }
+};
