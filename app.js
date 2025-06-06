@@ -1,18 +1,21 @@
 const API_BASE = 'http://127.0.0.1:5000/api';
 
-function cargarUsuarios() {
-  fetch(`${API_BASE}/usuarios`)
+let paginaUsuarios = 1;
+
+function cargarUsuarios(pagina = 1) {
+  paginaUsuarios = pagina;
+  fetch(`${API_BASE}/usuarios?page=${pagina}`)
     .then(response => {
       if (!response.ok) throw new Error('Error en la respuesta del servidor');
       return response.json();
     })
-    .then(data => mostrarUsuarios(data.items))
+    .then(data => mostrarUsuarios(data.items, data.pages))
     .catch(error => {
       document.getElementById('contenido').innerText = 'Error al cargar usuarios: ' + error.message;
     });
 }
 
-function mostrarUsuarios(usuarios) {
+function mostrarUsuarios(usuarios, totalPaginas = 1) {
   const contenedor = document.getElementById('contenido');
   if (!usuarios.length) {
     contenedor.innerText = 'No hay usuarios registrados.';
@@ -39,6 +42,31 @@ function mostrarUsuarios(usuarios) {
   });
   contenedor.innerHTML = '';
   contenedor.appendChild(tabla);
+
+  // Controles de paginación
+  if (totalPaginas > 1) {
+    const paginacion = document.createElement('div');
+    paginacion.style.textAlign = 'center';
+    paginacion.style.marginTop = '1em';
+
+    if (paginaUsuarios > 1) {
+      const btnPrev = document.createElement('button');
+      btnPrev.textContent = 'Anterior';
+      btnPrev.onclick = () => cargarUsuarios(paginaUsuarios - 1);
+      paginacion.appendChild(btnPrev);
+    }
+
+    paginacion.appendChild(document.createTextNode(` Página ${paginaUsuarios} de ${totalPaginas} `));
+
+    if (paginaUsuarios < totalPaginas) {
+      const btnNext = document.createElement('button');
+      btnNext.textContent = 'Siguiente';
+      btnNext.onclick = () => cargarUsuarios(paginaUsuarios + 1);
+      paginacion.appendChild(btnNext);
+    }
+
+    contenedor.appendChild(paginacion);
+  }
 }
 
 let paginaActual = 1;
