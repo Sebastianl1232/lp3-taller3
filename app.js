@@ -164,6 +164,7 @@ function mostrarUsuariosLista(usuarios) {
 
   contenedor.innerHTML = '<h2>Usuarios</h2>';
   contenedor.appendChild(lista);
+   agregarBotonInicio();
 }
 
 // Función auxiliar para crear una tabla de canciones
@@ -303,3 +304,19 @@ window.onload = function() {
     };
   }
 };
+
+function agregarBotonInicio() {
+  // Evita duplicar el botón
+  if (document.getElementById('btnInicio')) return;
+  const btn = document.createElement('button');
+  btn.id = 'btnInicio';
+  btn.textContent = 'Volver al inicio';
+  btn.style.margin = '1.5em auto 0 auto';
+  btn.style.display = 'block';
+  btn.onclick = function() {
+    document.getElementById('contenido').style.display = 'none';
+    document.getElementById('bienvenida').style.display = 'flex';
+  };
+  // Lo agregamos al final del contenido
+  document.getElementById('contenido').appendChild(btn);
+}
