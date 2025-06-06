@@ -6,10 +6,19 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Consumo de API - Taller 3</h1>
-  <button onclick="cargarUsuariosLista()">Ver Usuarios</button>
-  <button onclick="cargarCanciones()">Ver Canciones</button>
-  <div id="contenido"></div>
+  <div id="bienvenida" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+    <header style="width:100%;padding:1em 0 0.5em 0;">
+      <h2 style="text-align:center;font-size:2em;font-weight:700;letter-spacing:1px;margin:0;">MusicAPI</h2>
+    </header>
+    <main style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <h1 style="font-size:3em;font-weight:800;margin-bottom:0.2em;text-align:center;">Construye con<br>MusicAPI</h1>
+      <p style="font-size:1.3em;color:#444;text-align:center;max-width:500px;margin-bottom:2em;">
+        Accede a metadatos, playlists, análisis y streaming a través de nuestra API sencilla y potente.
+      </p>
+      <button id="btnComenzar" style="background:#111;color:#fff;font-size:1.2em;padding:0.7em 2.5em;border:none;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.08);font-weight:700;cursor:pointer;transition:background 0.2s;">COMENZAR</button>
+    </main>
+  </div>
+  <div id="contenido" style="display:none;"></div>
   <script src="app.js"></script>
 </body>
 </html>
