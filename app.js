@@ -97,11 +97,24 @@ function buscarCanciones() {
     })
     .then(data => {
       document.getElementById('busqueda').value = '';
-      // Filtrar por coincidencia exacta en el título
-      const canciones = (data.items || data).filter(
-        c => c.titulo && c.titulo.toLowerCase() === query.toLowerCase()
+      const canciones = data.items || data;
+      // Coincidencias exactas por título o artista
+      const exactas = canciones.filter(
+        c =>
+          (c.titulo && c.titulo.toLowerCase() === query.toLowerCase()) ||
+          (c.artista && c.artista.toLowerCase() === query.toLowerCase())
       );
-      mostrarCanciones(canciones);
+      if (exactas.length > 0) {
+        mostrarCanciones(exactas);
+      } else {
+        // Coincidencias parciales por título o artista
+        const parciales = canciones.filter(
+          c =>
+            (c.titulo && c.titulo.toLowerCase().includes(query.toLowerCase())) ||
+            (c.artista && c.artista.toLowerCase().includes(query.toLowerCase()))
+        );
+        mostrarCanciones(parciales);
+      }
     })
     .catch(error => {
       document.getElementById('contenido').innerText = 'Error al buscar canciones: ' + error.message;
