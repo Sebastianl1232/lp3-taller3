@@ -95,7 +95,14 @@ function buscarCanciones() {
       if (!response.ok) throw new Error('Error en la búsqueda');
       return response.json();
     })
-    .then(data => mostrarCanciones(data.items || data))
+    .then(data => {
+      document.getElementById('busqueda').value = '';
+      // Filtrar por coincidencia exacta en el título
+      const canciones = (data.items || data).filter(
+        c => c.titulo && c.titulo.toLowerCase() === query.toLowerCase()
+      );
+      mostrarCanciones(canciones);
+    })
     .catch(error => {
       document.getElementById('contenido').innerText = 'Error al buscar canciones: ' + error.message;
     });
