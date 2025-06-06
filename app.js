@@ -41,25 +41,27 @@ function mostrarUsuarios(usuarios) {
   contenedor.appendChild(tabla);
 }
 
-function cargarCanciones() {
-  fetch(`${API_BASE}/canciones`)
+let paginaActual = 1;
+function cargarCanciones(pagina = 1) {
+  paginaActual = pagina;
+  fetch(`${API_BASE}/canciones?page=${pagina}`)
     .then(response => {
       if (!response.ok) throw new Error('Error en la respuesta del servidor');
       return response.json();
     })
-    .then(data => mostrarCanciones(data.items))
+    .then(data => mostrarCanciones(data.items, data.pages))
     .catch(error => {
       document.getElementById('contenido').innerText = 'Error al cargar canciones: ' + error.message;
     });
 }
 
-function mostrarCanciones(canciones) {
+function mostrarCanciones(canciones, totalPaginas = 1) {
   const contenedor = document.getElementById('contenido');
   if (!canciones.length) {
     contenedor.innerText = 'No hay canciones registradas.';
     return;
   }
-  const tabla = document.createElement('table');
+  let tabla = document.createElement('table');
   tabla.innerHTML = `
     <tr>
       <th>ID</th>
@@ -76,12 +78,37 @@ function mostrarCanciones(canciones) {
       <td>${cancion.titulo || ''}</td>
       <td>${cancion.artista || ''}</td>
       <td>${cancion.genero || ''}</td>
-      <td>${cancion.anio || ''}</td>
+      <td>${cancion.anio || cancion.año || ''}</td>
     `;
     tabla.appendChild(fila);
   });
   contenedor.innerHTML = '';
   contenedor.appendChild(tabla);
+
+  // Controles de paginación
+  if (totalPaginas > 1) {
+    const paginacion = document.createElement('div');
+    paginacion.style.textAlign = 'center';
+    paginacion.style.marginTop = '1em';
+
+    if (paginaActual > 1) {
+      const btnPrev = document.createElement('button');
+      btnPrev.textContent = 'Anterior';
+      btnPrev.onclick = () => cargarCanciones(paginaActual - 1);
+      paginacion.appendChild(btnPrev);
+    }
+
+    paginacion.appendChild(document.createTextNode(` Página ${paginaActual} de ${totalPaginas} `));
+
+    if (paginaActual < totalPaginas) {
+      const btnNext = document.createElement('button');
+      btnNext.textContent = 'Siguiente';
+      btnNext.onclick = () => cargarCanciones(paginaActual + 1);
+      paginacion.appendChild(btnNext);
+    }
+
+    contenedor.appendChild(paginacion);
+  }
 }
 
 function buscarCanciones() {
