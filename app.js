@@ -87,84 +87,64 @@ function mostrarUsuariosLista(usuarios) {
     contenedor.innerText = 'No hay usuarios registrados.';
     return;
   }
-  const lista = document.createElement('ul');
-  lista.style.listStyle = 'none';
-  lista.style.padding = '0';
+
+  // Contenedor de tarjetas
+  const grid = document.createElement('div');
+  grid.className = 'usuarios-grid';
 
   usuarios.forEach(usuario => {
-    const item = document.createElement('li');
-    item.style.padding = '0.7em 1em';
-    item.style.margin = '0.5em 0';
-    item.style.background = '#e3eaf2';
-    item.style.borderRadius = '6px';
-    item.style.cursor = 'pointer';
-    item.style.transition = 'background 0.2s';
-    item.onmouseover = () => item.style.background = '#c5cae9';
-    item.onmouseout = () => item.style.background = '#e3eaf2';
-    item.innerHTML = `<strong>${usuario.nombre}</strong> <span style="color:#555;font-size:0.95em;">(${usuario.correo})</span>`;
-
-    // Contenedor para la info expandida
-    const detallesDiv = document.createElement('div');
-    detallesDiv.style.marginTop = '0.7em';
-    detallesDiv.style.display = 'none';
-    detallesDiv.style.background = '#f8fafc';
-    detallesDiv.style.borderRadius = '8px';
-    detallesDiv.style.padding = '1em';
-
-    item.appendChild(detallesDiv);
-
-    item.onclick = function(e) {
-      // Toggle: si ya está abierto, ciérralo
-      if (detallesDiv.style.display === 'block') {
-        detallesDiv.style.display = 'none';
-        detallesDiv.innerHTML = '';
-        return;
-      }
-      // Cierra otros abiertos
-      document.querySelectorAll('.detalles-usuario').forEach(div => {
-        div.style.display = 'none';
-        div.innerHTML = '';
-      });
-      detallesDiv.style.display = 'block';
-      detallesDiv.className = 'detalles-usuario';
-      detallesDiv.innerHTML = '<em>Cargando canciones...</em>';
-
-      // Fetch canciones favoritas y todas las canciones del usuario (ajusta el endpoint si es necesario)
-      Promise.all([
-        fetch(`${API_BASE}/usuarios/${usuario.id}/favoritos`).then(r => r.json()),
-        fetch(`${API_BASE}/usuarios/${usuario.id}/canciones`).then(r => r.json()).catch(() => ({items: []}))
-      ]).then(([favoritos, cancionesUsuario]) => {
-        let html = '';
-
-        // Canciones favoritas
-        html += `<h4 style="margin-bottom:0.5em;">Favoritas</h4>`;
-        if (favoritos.items && favoritos.items.length) {
-          html += crearTablaCanciones(favoritos.items);
-        } else {
-          html += `<em>No tiene canciones favoritas.</em>`;
-        }
-
-        // Todas las canciones del usuario
-        html += `<h4 style="margin:1em 0 0.5em 0;">Todas sus canciones</h4>`;
-        if (cancionesUsuario.items && cancionesUsuario.items.length) {
-          html += crearTablaCanciones(cancionesUsuario.items);
-        } else {
-          html += `<em>No tiene canciones propias.</em>`;
-        }
-
-        detallesDiv.innerHTML = html;
-      }).catch(() => {
-        detallesDiv.innerHTML = '<em>Error al cargar canciones.</em>';
-      });
-
-      e.stopPropagation();
+    const card = document.createElement('div');
+    card.className = 'usuario-card';
+    card.onclick = function() {
+      // Aquí puedes mostrar las canciones favoritas del usuario
+      cargarFavoritosUsuario(usuario.id, usuario.nombre);
     };
-    lista.appendChild(item);
+
+    // Avatar con iniciales
+    const avatar = document.createElement('div');
+    avatar.className = 'usuario-avatar';
+    const iniciales = (usuario.nombre ? usuario.nombre[0] : '') + (usuario.apellido ? usuario.apellido[0] : (usuario.nombre ? usuario.nombre.split(' ')[1]?.[0] || '' : ''));
+    avatar.textContent = iniciales.toUpperCase();
+
+    // Nombre
+    const nombre = document.createElement('div');
+    nombre.className = 'usuario-nombre';
+    nombre.textContent = usuario.nombre.length > 18 ? usuario.nombre.slice(0, 18) + '...' : usuario.nombre;
+
+    // Username (si tienes, si no, muestra el correo)
+    const username = document.createElement('div');
+    username.className = 'usuario-username';
+    username.textContent = usuario.username ? '@' + usuario.username : '';
+
+    // Correo
+    const correo = document.createElement('div');
+    correo.className = 'usuario-correo';
+    correo.textContent = usuario.correo;
+
+    card.appendChild(avatar);
+    card.appendChild(nombre);
+    if (usuario.username) card.appendChild(username);
+    card.appendChild(correo);
+
+    grid.appendChild(card);
   });
 
-  contenedor.innerHTML = '<h2>Usuarios</h2>';
-  contenedor.appendChild(lista);
-   agregarBotonInicio();
+  contenedor.innerHTML = '<h2 style="text-align:center;margin-bottom:1em;">Elige un usuario</h2>';
+  contenedor.appendChild(grid);
+  agregarBotonInicio();
+}
+
+// Función para cargar favoritos de un usuario (ajusta según tu lógica)
+function cargarFavoritosUsuario(usuarioId, nombreUsuario) {
+  fetch(`${API_BASE}/usuarios/${usuarioId}/favoritos`)
+    .then(response => {
+      if (!response.ok) throw new Error('Error al cargar favoritos');
+      return response.json();
+    })
+    .then(data => mostrarCanciones(data.items || data, 1, false, nombreUsuario))
+    .catch(error => {
+      document.getElementById('contenido').innerText = 'Error al cargar favoritos: ' + error.message;
+    });
 }
 
 // Función auxiliar para crear una tabla de canciones
