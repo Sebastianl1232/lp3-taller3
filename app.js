@@ -333,6 +333,17 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
     ? `<h2>Canciones favoritas de ${nombreUsuario}</h2>`
     : `<h2 style="text-align:center;margin-bottom:1em;">Gestión de canciones</h2>`;
 
+  // Buscador de canciones (solo si no es favoritos)
+  let buscador = '';
+  if (!nombreUsuario) {
+    buscador = `
+      <div class="controles-usuarios">
+        <input type="text" id="busqueda" placeholder="Buscar canción por título o artista">
+        <button onclick="buscarCanciones()" type="button">Buscar Canciones</button>
+      </div>
+    `;
+  }
+
   // Formulario para crear canción (solo si no es favoritos)
   let form = '';
   if (!nombreUsuario) {
@@ -350,7 +361,8 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
   }
 
   if (!canciones.length) {
-    contenedor.innerHTML = titulo + form + '<p>No hay canciones registradas.</p>';
+    contenedor.innerHTML = titulo + buscador + form + '<p>No hay canciones registradas.</p>';
+    contenedor.appendChild(tabla);
     if (!nombreUsuario) agregarBotonInicio();
     return;
   }
@@ -386,7 +398,7 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
     tabla.appendChild(fila);
   });
 
-  contenedor.innerHTML = titulo + form;
+  contenedor.innerHTML = titulo + buscador + form;
   contenedor.appendChild(tabla);
 
   // Paginación
