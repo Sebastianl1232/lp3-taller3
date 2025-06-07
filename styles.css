@@ -185,3 +185,20 @@ tr:hover {
   width: 100%;
   word-break: break-all;
 }
+
+.form-crear-usuario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-bottom: 2em;
+  flex-wrap: wrap;
+}
+.form-crear-usuario input, .form-crear-usuario button {
+  font-size: 1em;
+}
+.form-crear-usuario h3 {
+  margin: 0 1em 0 0;
+  font-size: 1.1em;
+  color: #283593;
+}
