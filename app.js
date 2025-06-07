@@ -114,9 +114,6 @@ function mostrarUsuariosLista(usuarios) {
   usuarios.forEach(usuario => {
     const card = document.createElement('div');
     card.className = 'usuario-card';
-    card.onclick = function() {
-      cargarFavoritosUsuario(usuario.id, usuario.nombre);
-    };
 
     // Avatar con iniciales
     const avatar = document.createElement('div');
@@ -129,7 +126,7 @@ function mostrarUsuariosLista(usuarios) {
     nombre.className = 'usuario-nombre';
     nombre.textContent = usuario.nombre.length > 18 ? usuario.nombre.slice(0, 18) + '...' : usuario.nombre;
 
-    // Username (si tienes, si no, muestra el correo)
+    // Username (si tienes)
     const username = document.createElement('div');
     username.className = 'usuario-username';
     username.textContent = usuario.username ? '@' + usuario.username : '';
@@ -139,10 +136,46 @@ function mostrarUsuariosLista(usuarios) {
     correo.className = 'usuario-correo';
     correo.textContent = usuario.correo;
 
+    // Botones de gestión
+    const acciones = document.createElement('div');
+    acciones.style.marginTop = '1em';
+    acciones.style.display = 'flex';
+    acciones.style.gap = '0.5em';
+
+    // Botón Editar
+    const btnEditar = document.createElement('button');
+    btnEditar.textContent = 'Editar';
+    btnEditar.style.background = '#ffd600';
+    btnEditar.style.color = '#222';
+    btnEditar.onclick = (e) => {
+      e.stopPropagation();
+      mostrarFormularioEditarUsuario(usuario);
+    };
+
+    // Botón Eliminar
+    const btnEliminar = document.createElement('button');
+    btnEliminar.textContent = 'Eliminar';
+    btnEliminar.style.background = '#e53935';
+    btnEliminar.style.color = '#fff';
+    btnEliminar.onclick = (e) => {
+      e.stopPropagation();
+      if (confirm('¿Seguro que deseas eliminar este usuario?')) {
+        eliminarUsuario(usuario.id);
+      }
+    };
+
+    acciones.appendChild(btnEditar);
+    acciones.appendChild(btnEliminar);
+
+    card.onclick = function() {
+      cargarFavoritosUsuario(usuario.id, usuario.nombre);
+    };
+
     card.appendChild(avatar);
     card.appendChild(nombre);
     if (usuario.username) card.appendChild(username);
     card.appendChild(correo);
+    card.appendChild(acciones);
 
     grid.appendChild(card);
   });
@@ -175,6 +208,68 @@ function crearUsuario() {
       mensaje.style.color = 'green';
       mensaje.textContent = 'Usuario creado correctamente.';
       // Recarga la lista de usuarios
+      setTimeout(() => cargarUsuariosLista(), 1000);
+    })
+    .catch(error => {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error: ' + error.message;
+    });
+}
+
+function eliminarUsuario(id) {
+  fetch(`${API_BASE}/usuarios/${id}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo eliminar el usuario');
+      // Recarga la lista de usuarios
+      cargarUsuariosLista();
+    })
+    .catch(error => {
+      alert('Error al eliminar usuario: ' + error.message);
+    });
+}
+
+function mostrarFormularioEditarUsuario(usuario) {
+  const contenedor = document.getElementById('contenido');
+  contenedor.innerHTML = `
+    <h2 style="text-align:center;margin-bottom:1em;">Editar usuario</h2>
+    <form id="formEditarUsuario" class="form-crear-usuario">
+      <input type="text" id="editarNombre" value="${usuario.nombre}" required>
+      <input type="email" id="editarCorreo" value="${usuario.correo}" required>
+      <button type="submit">Guardar</button>
+      <button type="button" id="cancelarEdicion">Cancelar</button>
+      <div id="mensajeEditarUsuario" style="margin-top:0.5em;color:#1976d2;font-weight:500;"></div>
+    </form>
+  `;
+  document.getElementById('formEditarUsuario').onsubmit = function(e) {
+    e.preventDefault();
+    editarUsuario(usuario.id);
+  };
+  document.getElementById('cancelarEdicion').onclick = function() {
+    cargarUsuariosLista();
+  };
+  agregarBotonInicio();
+}
+
+function editarUsuario(id) {
+  const nombre = document.getElementById('editarNombre').value.trim();
+  const correo = document.getElementById('editarCorreo').value.trim();
+  const mensaje = document.getElementById('mensajeEditarUsuario');
+  if (!nombre || !correo) {
+    mensaje.textContent = 'Completa todos los campos.';
+    mensaje.style.color = 'red';
+    return;
+  }
+  fetch(`${API_BASE}/usuarios/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, correo })
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo editar el usuario');
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Usuario editado correctamente.';
       setTimeout(() => cargarUsuariosLista(), 1000);
     })
     .catch(error => {
