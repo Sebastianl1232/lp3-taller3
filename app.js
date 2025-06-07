@@ -92,16 +92,6 @@ function mostrarUsuariosLista(usuarios) {
     return;
   }
 
-  // Controles de búsqueda y favoritos
-  const controles = document.createElement('div');
-  controles.className = 'controles-usuarios';
-  controles.innerHTML = `
-    <input type="text" id="busqueda" placeholder="Buscar canción por título o artista">
-    <button onclick="buscarCanciones()">Buscar Canciones</button>
-    <input type="number" id="usuarioId" placeholder="ID de usuario para favoritos" style="width:160px;">
-    <button onclick="cargarFavoritos()">Ver Favoritos</button>
-  `;
-
   // Formulario para crear usuario
   const form = document.createElement('form');
   form.className = 'form-crear-usuario';
@@ -191,7 +181,6 @@ function mostrarUsuariosLista(usuarios) {
   });
 
   contenedor.innerHTML = '<h2 style="text-align:center;margin-bottom:1em;">Elige un usuario</h2>';
-  contenedor.appendChild(controles);
   contenedor.appendChild(form);
   contenedor.appendChild(grid);
   agregarBotonInicio();
