@@ -215,3 +215,15 @@ tr:hover {
 .usuario-card button:hover {
   opacity: 0.85;
 }
+
+.controles-usuarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+.controles-usuarios input, .controles-usuarios button {
+  font-size: 1em;
+}
