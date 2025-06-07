@@ -202,3 +202,16 @@ tr:hover {
   font-size: 1.1em;
   color: #283593;
 }
+
+.usuario-card button {
+  border: none;
+  padding: 0.4em 1em;
+  border-radius: 5px;
+  font-size: 0.95em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.usuario-card button:hover {
+  opacity: 0.85;
+}
