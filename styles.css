@@ -425,3 +425,201 @@ tr:hover {
 .paginacion-canciones button:hover {
   background: #1565c0;
 }
+
+/* Mejorar Aspectos para la seccion de gestion de usuarios*/
+.usuario-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 4px 24px rgba(60,80,180,0.10), 0 1.5px 4px rgba(60,80,180,0.07);
+  padding: 2em 1.5em 1.5em 1.5em;
+  width: 100%;
+  max-width: 270px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: box-shadow 0.25s, transform 0.18s;
+  border: 1.5px solid #e3eaf2;
+}
+
+.usuario-card:hover {
+  box-shadow: 0 12px 32px rgba(25,118,210,0.15), 0 2px 8px rgba(60,80,180,0.12);
+  transform: translateY(-6px) scale(1.035);
+  border-color: #b6c6f5;
+}
+
+.usuario-avatar {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #e3eaf2 60%, #bbdefb 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  font-weight: 700;
+  color: #283593;
+  margin-bottom: 1em;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(60,80,180,0.10);
+}
+
+.usuario-nombre {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #222b3a;
+  margin-bottom: 0.2em;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+}
+
+.usuario-username {
+  color: #1976d2;
+  font-size: 1em;
+  margin-bottom: 0.2em;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuario-correo {
+  color: #6b7280;
+  font-size: 1em;
+  text-align: center;
+  margin-top: 0.3em;
+  width: 100%;
+  word-break: break-all;
+}
+
+.usuario-card button {
+  border: none;
+  padding: 0.45em 1.2em;
+  border-radius: 7px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.4em;
+  margin-bottom: 0.2em;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+
+.usuario-card button:nth-child(1) { /* Editar */
+  background: #ffd600;
+  color: #222;
+}
+.usuario-card button:nth-child(2) { /* Eliminar */
+  background: #e53935;
+  color: #fff;
+}
+
+.usuario-card button:hover {
+  opacity: 0.92;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.form-crear-usuario {
+  background: #f4f6fb;
+  border-radius: 10px;
+  padding: 1em 1.5em;
+  margin-bottom: 2em;
+  box-shadow: 0 2px 8px rgba(60, 80, 180, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7em;
+  flex-wrap: wrap;
+}
+.form-crear-usuario h3 {
+  color: #283593;
+  font-size: 1.15em;
+  margin: 0 1em 0 0;
+}
+.form-crear-usuario input, .form-crear-usuario button {
+  font-size: 1em;
+}
+
+.usuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2em;
+  margin: 2em 0;
+  justify-items: center;
+}
+
+body {
+  background: linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%);
+}
+
+@media (max-width: 900px) {
+  .usuarios-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2em;
+  }
+  .form-crear-usuario {
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 1em 0.5em;
+  }
+}
+
+/* Animacion Gestion de Usuarios*/
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.usuario-card {
+  /* ...tus estilos existentes... */
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.02,.32,1) both;
+}
+
+.usuario-card button,
+table button {
+  /* ...tus estilos existentes... */
+  transition: background 0.2s, color 0.2s, transform 0.25s cubic-bezier(.23,1.02,.32,1);
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+tr {
+  animation: fadeInRow 0.6s cubic-bezier(.23,1.02,.32,1) both;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.form-crear-usuario {
+  /* ...tus estilos existentes... */
+  animation: popIn 0.7s cubic-bezier(.23,1.02,.32,1) both;
+}
