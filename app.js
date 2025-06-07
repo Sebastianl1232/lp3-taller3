@@ -342,11 +342,30 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
   const contenedor = document.getElementById('contenido');
   let titulo = nombreUsuario
     ? `<h2>Canciones favoritas de ${nombreUsuario}</h2>`
-    : `<h2 style="text-align:center;margin-bottom:1em;">Listado de canciones</h2>`;
+    : `<h2 style="text-align:center;margin-bottom:1em;">Gestión de canciones</h2>`;
+
+  // Formulario para crear canción (solo si no es favoritos)
+  let form = '';
+  if (!nombreUsuario) {
+    form = `
+      <form id="formCrearCancion" class="form-crear-usuario" style="margin-bottom:1.5em;">
+        <h3>Agregar canción</h3>
+        <input type="text" id="nuevoTitulo" placeholder="Título" required>
+        <input type="text" id="nuevoArtista" placeholder="Artista" required>
+        <input type="text" id="nuevoGenero" placeholder="Género" required>
+        <input type="number" id="nuevoAnio" placeholder="Año" required style="width:90px;">
+        <button type="submit">Crear</button>
+        <div id="mensajeCancion" style="margin-top:0.5em;color:#1976d2;font-weight:500;"></div>
+      </form>
+    `;
+  }
+
   if (!canciones.length) {
-    contenedor.innerHTML = titulo + '<p>No hay canciones registradas.</p>';
+    contenedor.innerHTML = titulo + form + '<p>No hay canciones registradas.</p>';
+    if (!nombreUsuario) agregarBotonInicio();
     return;
   }
+
   let tabla = document.createElement('table');
   tabla.innerHTML = `
     <tr>
@@ -355,6 +374,7 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
       <th>Artista</th>
       <th>Género</th>
       <th>Año</th>
+      ${!nombreUsuario ? '<th>Acciones</th>' : ''}
     </tr>
   `;
   canciones.forEach(cancion => {
@@ -365,13 +385,22 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
       <td>${cancion.artista || ''}</td>
       <td>${cancion.genero || ''}</td>
       <td>${cancion.anio || cancion.año || ''}</td>
+      ${
+        !nombreUsuario
+          ? `<td>
+              <button onclick="editarCancion(${cancion.id}, '${cancion.titulo}', '${cancion.artista}', '${cancion.genero}', '${cancion.anio || cancion.año || ''}')">Editar</button>
+              <button onclick="eliminarCancion(${cancion.id})" style="background:#e53935;color:#fff;">Eliminar</button>
+            </td>`
+          : ''
+      }
     `;
     tabla.appendChild(fila);
   });
-  contenedor.innerHTML = titulo;
+
+  contenedor.innerHTML = titulo + form;
   contenedor.appendChild(tabla);
 
-  // Controles de paginación
+  // Paginación
   if (paginacion && totalPaginas > 1) {
     const paginacionDiv = document.createElement('div');
     paginacionDiv.style.textAlign = 'center';
@@ -396,7 +425,115 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
     contenedor.appendChild(paginacionDiv);
   }
 
+  if (!nombreUsuario) agregarBotonInicio();
+
+  // Evento para crear canción
+  if (!nombreUsuario) {
+    const formCrear = document.getElementById('formCrearCancion');
+    if (formCrear) {
+      formCrear.onsubmit = function(e) {
+        e.preventDefault();
+        crearCancion();
+      };
+    }
+  }
+}
+
+function crearCancion() {
+  const titulo = document.getElementById('nuevoTitulo').value.trim();
+  const artista = document.getElementById('nuevoArtista').value.trim();
+  const genero = document.getElementById('nuevoGenero').value.trim();
+  const anio = document.getElementById('nuevoAnio').value.trim();
+  const mensaje = document.getElementById('mensajeCancion');
+  if (!titulo || !artista || !genero || !anio) {
+    mensaje.textContent = 'Completa todos los campos.';
+    mensaje.style.color = 'red';
+    return;
+  }
+  fetch(`${API_BASE}/canciones`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo, artista, genero, anio })
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo crear la canción');
+      return response.json();
+    })
+    .then(data => {
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Canción creada correctamente.';
+      setTimeout(() => cargarCanciones(), 1000);
+    })
+    .catch(error => {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error: ' + error.message;
+    });
+}
+
+function eliminarCancion(id) {
+  if (!confirm('¿Seguro que deseas eliminar esta canción?')) return;
+  fetch(`${API_BASE}/canciones/${id}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo eliminar la canción');
+      cargarCanciones();
+    })
+    .catch(error => {
+      alert('Error al eliminar canción: ' + error.message);
+    });
+}
+
+function editarCancion(id, titulo, artista, genero, anio) {
+  const contenedor = document.getElementById('contenido');
+  contenedor.innerHTML = `
+    <h2 style="text-align:center;margin-bottom:1em;">Editar canción</h2>
+    <form id="formEditarCancion" class="form-crear-usuario">
+      <input type="text" id="editarTitulo" value="${titulo}" required>
+      <input type="text" id="editarArtista" value="${artista}" required>
+      <input type="text" id="editarGenero" value="${genero}" required>
+      <input type="number" id="editarAnio" value="${anio}" required style="width:90px;">
+      <button type="submit">Guardar</button>
+      <button type="button" id="cancelarEdicionCancion">Cancelar</button>
+      <div id="mensajeEditarCancion" style="margin-top:0.5em;color:#1976d2;font-weight:500;"></div>
+    </form>
+  `;
+  document.getElementById('formEditarCancion').onsubmit = function(e) {
+    e.preventDefault();
+    guardarEdicionCancion(id);
+  };
+  document.getElementById('cancelarEdicionCancion').onclick = function() {
+    cargarCanciones();
+  };
   agregarBotonInicio();
+}
+
+function guardarEdicionCancion(id) {
+  const titulo = document.getElementById('editarTitulo').value.trim();
+  const artista = document.getElementById('editarArtista').value.trim();
+  const genero = document.getElementById('editarGenero').value.trim();
+  const anio = document.getElementById('editarAnio').value.trim();
+  const mensaje = document.getElementById('mensajeEditarCancion');
+  if (!titulo || !artista || !genero || !anio) {
+    mensaje.textContent = 'Completa todos los campos.';
+    mensaje.style.color = 'red';
+    return;
+  }
+  fetch(`${API_BASE}/canciones/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titulo, artista, genero, anio })
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo editar la canción');
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Canción editada correctamente.';
+      setTimeout(() => cargarCanciones(), 1000);
+    })
+    .catch(error => {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error: ' + error.message;
+    });
 }
 
 function buscarCanciones() {
@@ -461,6 +598,27 @@ window.onload = function() {
       const contenido = document.getElementById('contenido');
       contenido.style.display = 'block';
       cargarUsuariosLista();
+    };
+  }
+};
+
+window.onload = function() {
+  const btn = document.getElementById('btnComenzar');
+  if (btn) {
+    btn.onclick = function() {
+      document.getElementById('bienvenida').style.display = 'none';
+      const contenido = document.getElementById('contenido');
+      contenido.style.display = 'block';
+      cargarUsuariosLista();
+    };
+  }
+  const btnCanciones = document.getElementById('btnVerCanciones');
+  if (btnCanciones) {
+    btnCanciones.onclick = function() {
+      document.getElementById('bienvenida').style.display = 'none';
+      const contenido = document.getElementById('contenido');
+      contenido.style.display = 'block';
+      cargarCanciones();
     };
   }
 };
