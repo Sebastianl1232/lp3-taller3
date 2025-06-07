@@ -360,6 +360,7 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
     `;
   }
 
+
   if (!canciones.length) {
     contenedor.innerHTML = titulo + buscador + form + '<p>No hay canciones registradas.</p>';
     if (!nombreUsuario) agregarBotonInicio();
@@ -408,6 +409,7 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
     const paginacionDiv = document.createElement('div');
     paginacionDiv.style.textAlign = 'center';
     paginacionDiv.style.marginTop = '1em';
+    paginacionDiv.className = 'paginacion-canciones';
 
     if (paginaActual > 1) {
       const btnPrev = document.createElement('button');
