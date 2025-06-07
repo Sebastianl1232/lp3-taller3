@@ -83,10 +83,29 @@ function mostrarUsuarios(usuarios, totalPaginas = 1) {
 
 function mostrarUsuariosLista(usuarios) {
   const contenedor = document.getElementById('contenido');
+  // Elimina el botón de volver al inicio si existe
+  const btnInicio = document.getElementById('btnInicio');
+  if (btnInicio) btnInicio.remove();
+
   if (!usuarios.length) {
     contenedor.innerText = 'No hay usuarios registrados.';
     return;
   }
+
+  // Formulario para crear usuario
+  const form = document.createElement('form');
+  form.className = 'form-crear-usuario';
+  form.innerHTML = `
+    <h3>Crear nuevo usuario</h3>
+    <input type="text" id="nuevoNombre" placeholder="Nombre" required style="margin-right:0.5em;">
+    <input type="email" id="nuevoCorreo" placeholder="Correo" required style="margin-right:0.5em;">
+    <button type="submit">Crear</button>
+    <div id="mensajeUsuario" style="margin-top:0.5em;color:#1976d2;font-weight:500;"></div>
+  `;
+  form.onsubmit = function(e) {
+    e.preventDefault();
+    crearUsuario();
+  };
 
   // Contenedor de tarjetas
   const grid = document.createElement('div');
@@ -96,7 +115,6 @@ function mostrarUsuariosLista(usuarios) {
     const card = document.createElement('div');
     card.className = 'usuario-card';
     card.onclick = function() {
-      // Aquí puedes mostrar las canciones favoritas del usuario
       cargarFavoritosUsuario(usuario.id, usuario.nombre);
     };
 
@@ -130,8 +148,39 @@ function mostrarUsuariosLista(usuarios) {
   });
 
   contenedor.innerHTML = '<h2 style="text-align:center;margin-bottom:1em;">Elige un usuario</h2>';
+  contenedor.appendChild(form);
   contenedor.appendChild(grid);
   agregarBotonInicio();
+}
+
+function crearUsuario() {
+  const nombre = document.getElementById('nuevoNombre').value.trim();
+  const correo = document.getElementById('nuevoCorreo').value.trim();
+  const mensaje = document.getElementById('mensajeUsuario');
+  if (!nombre || !correo) {
+    mensaje.textContent = 'Completa todos los campos.';
+    mensaje.style.color = 'red';
+    return;
+  }
+  fetch(`${API_BASE}/usuarios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, correo })
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo crear el usuario');
+      return response.json();
+    })
+    .then(data => {
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Usuario creado correctamente.';
+      // Recarga la lista de usuarios
+      setTimeout(() => cargarUsuariosLista(), 1000);
+    })
+    .catch(error => {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error: ' + error.message;
+    });
 }
 
 // Función para cargar favoritos de un usuario (ajusta según tu lógica)
