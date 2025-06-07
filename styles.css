@@ -227,3 +227,22 @@ tr:hover {
 .controles-usuarios input, .controles-usuarios button {
   font-size: 1em;
 }
+
+.form-crear-usuario input[type="number"] {
+  width: 90px;
+}
+table button {
+  border: none;
+  padding: 0.4em 1em;
+  border-radius: 5px;
+  font-size: 0.95em;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 0.5em;
+  background: #ffd600;
+  color: #222;
+  transition: background 0.2s, color 0.2s;
+}
+table button:hover {
+  opacity: 0.85;
+}
