@@ -362,7 +362,6 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
 
   if (!canciones.length) {
     contenedor.innerHTML = titulo + buscador + form + '<p>No hay canciones registradas.</p>';
-    contenedor.appendChild(tabla);
     if (!nombreUsuario) agregarBotonInicio();
     return;
   }
@@ -375,7 +374,7 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
       <th>Artista</th>
       <th>Género</th>
       <th>Año</th>
-      ${!nombreUsuario ? '<th>Acciones</th>' : ''}
+      ${nombreUsuario ? '<th>Quitar</th>' : '<th>Acciones</th>'}
     </tr>
   `;
   canciones.forEach(cancion => {
@@ -387,12 +386,15 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
       <td>${cancion.genero || ''}</td>
       <td>${cancion.anio || cancion.año || ''}</td>
       ${
-        !nombreUsuario
+        nombreUsuario
           ? `<td>
+              <button onclick="quitarFavorito(${usuarioId}, ${cancion.id})" style="background:#e53935;color:#fff;">Quitar</button>
+            </td>`
+          : `<td>
+              <button onclick="agregarFavoritoPrompt(${cancion.id})">Agregar a favoritos</button>
               <button onclick="editarCancion(${cancion.id}, '${cancion.titulo}', '${cancion.artista}', '${cancion.genero}', '${cancion.anio || cancion.año || ''}')">Editar</button>
               <button onclick="eliminarCancion(${cancion.id})" style="background:#e53935;color:#fff;">Eliminar</button>
             </td>`
-          : ''
       }
     `;
     tabla.appendChild(fila);
@@ -591,6 +593,41 @@ function cargarFavoritos() {
     });
 }
 
+function agregarFavoritoPrompt(cancionId) {
+  const usuarioId = prompt('Ingrese el ID del usuario para agregar a favoritos:');
+  if (!usuarioId) return;
+  agregarFavorito(usuarioId, cancionId);
+}
+
+function agregarFavorito(usuarioId, cancionId) {
+  console.log('Agregando favorito:', usuarioId, cancionId); // <-- Depuración
+  fetch(`${API_BASE}/usuarios/${usuarioId}/favoritos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cancion_id: cancionId })
+  })
+    .then(response => {
+      if (!response.ok) return response.json().then(err => { throw new Error(err.message || 'No se pudo agregar la canción a favoritos'); });
+      alert('Canción agregada a favoritos');
+    })
+    .catch(error => {
+      alert('Error al agregar favorito: ' + error.message);
+    });
+}
+
+function quitarFavorito(usuarioId, cancionId) {
+  fetch(`${API_BASE}/usuarios/${usuarioId}/favoritos/${cancionId}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo quitar la canción de favoritos');
+      // Recarga favoritos
+      cargarFavoritosUsuario(usuarioId);
+    })
+    .catch(error => {
+      alert('Error al quitar favorito: ' + error.message);
+    });
+}
 window.onload = function() {
   const btn = document.getElementById('btnComenzar');
   if (btn) {
