@@ -304,3 +304,124 @@ table button:hover {
 #bienvenida button + button {
   margin-top: 1em;
 }
+
+/* Mejorar Aspectos para la seccion de gestion de canciones*/
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1.5em;
+  background: #f8fafc;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(60, 80, 180, 0.06);
+}
+
+th {
+  background: linear-gradient(90deg, #1976d2 60%, #64b5f6 100%);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-top: 1.1em;
+  padding-bottom: 1.1em;
+  font-size: 1.08em;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+table button {
+  border: none;
+  padding: 0.5em 1.2em;
+  border-radius: 7px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.4em;
+  margin-bottom: 0.2em;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+
+table button:nth-child(1) { /* Agregar a favoritos */
+  background: #ffd600;
+  color: #222;
+}
+table button:nth-child(2) { /* Editar */
+  background: #1976d2;
+  color: #fff;
+}
+table button:nth-child(3) { /* Eliminar */
+  background: #e53935;
+  color: #fff;
+}
+
+table button:hover {
+  opacity: 0.92;
+  transform: translateY(-2px) scale(1.04);
+}
+
+tr:nth-child(even) {
+  background: #f1f5fb;
+}
+tr:nth-child(odd) {
+  background: #e3eaf2;
+}
+tr:hover {
+  background: #c5cae9 !important;
+}
+
+.form-crear-usuario {
+  background: #f4f6fb;
+  border-radius: 10px;
+  padding: 1em 1.5em;
+  margin-bottom: 2em;
+  box-shadow: 0 2px 8px rgba(60, 80, 180, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7em;
+  flex-wrap: wrap;
+}
+.form-crear-usuario h3 {
+  color: #283593;
+  font-size: 1.15em;
+  margin: 0 1em 0 0;
+}
+.form-crear-usuario input, .form-crear-usuario button {
+  font-size: 1em;
+}
+
+.controles-usuarios {
+  background: #f4f6fb;
+  border-radius: 10px;
+  padding: 1em 1.5em;
+  margin-bottom: 1.5em;
+  box-shadow: 0 2px 8px rgba(60, 80, 180, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em;
+  justify-content: center;
+  align-items: center;
+}
+.controles-usuarios input, .controles-usuarios button {
+  font-size: 1em;
+}
+
+.paginacion-canciones {
+  text-align: center;
+  margin-top: 2em;
+}
+.paginacion-canciones button {
+  background: #1976d2;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5em 1.5em;
+  font-size: 1em;
+  margin: 0 0.5em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.paginacion-canciones button:hover {
+  background: #1565c0;
+}
