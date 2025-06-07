@@ -340,7 +340,9 @@ function cargarCanciones(pagina = 1) {
 
 function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombreUsuario = null) {
   const contenedor = document.getElementById('contenido');
-  let titulo = nombreUsuario ? `<h2>Canciones favoritas de ${nombreUsuario}</h2>` : '';
+  let titulo = nombreUsuario
+    ? `<h2>Canciones favoritas de ${nombreUsuario}</h2>`
+    : `<h2 style="text-align:center;margin-bottom:1em;">Listado de canciones</h2>`;
   if (!canciones.length) {
     contenedor.innerHTML = titulo + '<p>No hay canciones registradas.</p>';
     return;
@@ -368,10 +370,33 @@ function mostrarCanciones(canciones, totalPaginas = 1, paginacion = true, nombre
   });
   contenedor.innerHTML = titulo;
   contenedor.appendChild(tabla);
-  // Si no quieres paginación en favoritos, omite los controles
+
+  // Controles de paginación
   if (paginacion && totalPaginas > 1) {
-    // ... controles de paginación ...
+    const paginacionDiv = document.createElement('div');
+    paginacionDiv.style.textAlign = 'center';
+    paginacionDiv.style.marginTop = '1em';
+
+    if (paginaActual > 1) {
+      const btnPrev = document.createElement('button');
+      btnPrev.textContent = 'Anterior';
+      btnPrev.onclick = () => cargarCanciones(paginaActual - 1);
+      paginacionDiv.appendChild(btnPrev);
+    }
+
+    paginacionDiv.appendChild(document.createTextNode(` Página ${paginaActual} de ${totalPaginas} `));
+
+    if (paginaActual < totalPaginas) {
+      const btnNext = document.createElement('button');
+      btnNext.textContent = 'Siguiente';
+      btnNext.onclick = () => cargarCanciones(paginaActual + 1);
+      paginacionDiv.appendChild(btnNext);
+    }
+
+    contenedor.appendChild(paginacionDiv);
   }
+
+  agregarBotonInicio();
 }
 
 function buscarCanciones() {
